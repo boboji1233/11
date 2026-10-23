@@ -14,7 +14,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import transforms
-from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
+from torchvision.models import efficientnet_b0
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -124,8 +124,8 @@ class CBAM(nn.Module):
 
 def build_model():
     """构建分类模型（与原脚本一致）"""
-    weights = EfficientNet_B0_Weights.IMAGENET1K_V1
-    model = efficientnet_b0(weights=weights)
+    # 下方会加载项目自带的完整权重，无需再下载 ImageNet 权重。
+    model = efficientnet_b0(weights=None)
 
     # 修改第一层为单通道输入
     model.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
@@ -478,9 +478,9 @@ mock_analysis_history = [
 
 chat_messages = []
 
-@app.get("/")
-async def root():
-    """根端点，返回 API 信息"""
+@app.get("/health")
+async def health():
+    """健康检查端点，返回 API 和模型状态。"""
     return {
         "service": "儿童手腕隐匿性骨折检测系统",
         "version": "1.0.0",

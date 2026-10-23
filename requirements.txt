@@ -1,5 +1,8 @@
 # Pediatric Occult Fracture Detection System - Deployment Dependencies
 
+# Use CPU wheels on Render; CUDA libraries are unnecessary on this service.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 # Core Framework
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
@@ -7,12 +10,12 @@ python-multipart==0.0.6
 gunicorn==21.2.0
 
 # Deep Learning
-torch==2.1.0
-torchvision==0.16.0
+torch==2.1.0+cpu
+torchvision==0.16.0+cpu
 ultralytics==8.0.196
 
 # Image Processing
-opencv-python-headless==4.8.1.78  # Headless version, no GUI dependencies
+opencv-python==4.8.1.78  # Match Ultralytics' dependency; avoid two cv2 packages.
 Pillow==10.1.0
 numpy==1.24.4
 

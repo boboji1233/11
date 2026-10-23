@@ -1,32 +1,34 @@
 # 儿童手腕隐匿性骨折检测系统 - Docker 镜像
-# 适用于 Hugging Face Spaces 等平台
+# 适用于 Render 等容器平台
 
-FROM python:3.9-slim
+FROM python:3.11-slim-bookworm
 
 # 设置工作目录
 WORKDIR /app
 
 # 安装系统依赖
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
-
-# 复制项目文件
-COPY . .
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0
 
 # 安装 Python 依赖
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制项目文件（代码更新时保留依赖构建缓存）
+COPY . .
 
 # 创建必要的目录
 RUN mkdir -p exit/uploads
 
-# 暴露端口（Hugging Face 使用 7860）
-EXPOSE 7860
+# 暴露默认端口（Render 可通过 PORT 环境变量覆盖）
+EXPOSE 10000
 
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1
-ENV PORT=7860
+ENV PORT=10000
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
 
 # 启动应用
 CMD ["python", "backend.py"]
